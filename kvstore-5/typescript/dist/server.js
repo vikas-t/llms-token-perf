@@ -37,7 +37,7 @@ function createServer(store, wal) {
             res.status(404).json({ error: 'key not found' });
         }
         else {
-            res.json({ value });
+            res.json({ key, value });
         }
     });
     /**
@@ -52,11 +52,13 @@ function createServer(store, wal) {
             return;
         }
         try {
+            // Check if key already exists
+            const created = !store.has(key);
             // Log to WAL first
             await wal.logSet(key, value, ttl);
             // Then update in-memory store
             store.set(key, value, ttl);
-            res.json({ success: true });
+            res.json({ key, value, created });
         }
         catch (error) {
             res.status(500).json({ error: 'failed to write to WAL' });
@@ -93,6 +95,15 @@ function createServer(store, wal) {
             return;
         }
         const results = [];
+        // Check for invalid operations first
+        for (const operation of operations) {
+            const { op } = operation;
+            if (op !== 'set' && op !== 'get' && op !== 'delete') {
+                res.status(400).json({ error: `invalid operation: ${op}` });
+                return;
+            }
+        }
+        // Execute operations
         for (const operation of operations) {
             const { op, key, value, ttl } = operation;
             try {
@@ -122,15 +133,12 @@ function createServer(store, wal) {
                         results.push({ success: true });
                     }
                 }
-                else {
-                    results.push({ error: `unknown operation: ${op}` });
-                }
             }
             catch (error) {
                 results.push({ error: 'operation failed' });
             }
         }
-        res.json({ results });
+        res.json({ success: true, results });
     });
     return app;
 }

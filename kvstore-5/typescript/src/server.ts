@@ -57,13 +57,16 @@ export function createServer(store: KVStore, wal: WAL): Application {
     }
 
     try {
+      // Check if key already exists
+      const created = !store.has(key);
+
       // Log to WAL first
       await wal.logSet(key, value, ttl);
 
       // Then update in-memory store
       store.set(key, value, ttl);
 
-      res.json({ success: true });
+      res.json({ key, value, created });
     } catch (error) {
       res.status(500).json({ error: 'failed to write to WAL' });
     }
@@ -107,6 +110,16 @@ export function createServer(store: KVStore, wal: WAL): Application {
 
     const results: any[] = [];
 
+    // Check for invalid operations first
+    for (const operation of operations) {
+      const { op } = operation;
+      if (op !== 'set' && op !== 'get' && op !== 'delete') {
+        res.status(400).json({ error: `invalid operation: ${op}` });
+        return;
+      }
+    }
+
+    // Execute operations
     for (const operation of operations) {
       const { op, key, value, ttl } = operation;
 
@@ -132,15 +145,13 @@ export function createServer(store: KVStore, wal: WAL): Application {
             store.delete(key);
             results.push({ success: true });
           }
-        } else {
-          results.push({ error: `unknown operation: ${op}` });
         }
       } catch (error) {
         results.push({ error: 'operation failed' });
       }
     }
 
-    res.json({ results });
+    res.json({ success: true, results });
   });
 
   return app;
