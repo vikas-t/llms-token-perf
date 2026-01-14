@@ -1,5 +1,17 @@
 # Practical Impact: Does Token Efficiency Actually Matter?
 
+## TL;DR - The Simple Truth
+
+**More tokens = More compute time = More usage = Limits hit faster**
+
+- Pro tier: 40-80 compute hours/week
+- Heavy debugging (22 test runs, 24K output tokens) vs clean implementation (6 runs, 8K tokens) = **11× difference** in compute consumption
+- Hit the weekly cap → locked out until next week
+- **But**: LLM variance (3-14×) matters more than language choice (~20-40%)
+- **Recommendation**: Choose the language your team knows best, focus on clear specs to reduce debugging
+
+---
+
 ## The Real Question
 
 This study shows Python consumed 2.5M-12.7M tokens, Go consumed 1.5M-21.1M tokens, and TypeScript consumed 2.9M-19.5M tokens across different experiments. But **does this actually affect you as a Claude Code user?**
