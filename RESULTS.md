@@ -11,7 +11,8 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 - **Models**:
   - Primary: Claude Opus 4.5 (claude-opus-4-5-20251101) - main coding work
   - Secondary: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) - planning and simpler tasks
-  - ~95% of tokens are Opus, ~5% Sonnet (Sonnet used for initial planning phases)
+  - **Actual usage**: 79.8% Opus (239.7M tokens), 20.2% Sonnet (60.5M tokens) across all experiments
+  - Sonnet used for initial planning, exploration, and some debugging phases
 - **Tool**: Claude Code CLI
 - **Experiments**: 4 projects × multiple runs = 12 fair comparison runs (36 total implementations)
 - **Metrics**:

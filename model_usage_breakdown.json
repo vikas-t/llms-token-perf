@@ -1,0 +1,23 @@
+{
+  "claude-opus-4-5-20251101": {
+    "input_tokens": 15946,
+    "output_tokens": 1068198,
+    "cache_read_input_tokens": 229891768,
+    "cache_creation_input_tokens": 8745033,
+    "total": 239720945
+  },
+  "claude-sonnet-4-5-20250929": {
+    "input_tokens": 3031,
+    "output_tokens": 154212,
+    "cache_read_input_tokens": 58604614,
+    "cache_creation_input_tokens": 1736303,
+    "total": 60498160
+  },
+  "<synthetic>": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "total": 0
+  }
+}
