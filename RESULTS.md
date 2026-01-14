@@ -337,6 +337,20 @@ Bug → Test Failure → Read Error → Attempt Fix → New Bug → More Failure
 
 ---
 
+## Practical Impact: Does This Actually Matter to You?
+
+**TL;DR**: Token efficiency affects iteration speed and context window limits, but **NOT direct cost** (Claude Code uses subscription pricing, not per-token billing).
+
+See [PRACTICAL_IMPACT.md](PRACTICAL_IMPACT.md) for detailed analysis of:
+- How Claude Code subscription pricing works ($20-200/month flat rate)
+- When token efficiency matters (context window limits, iteration speed)
+- When it doesn't matter (cache reads are free, no per-token billing)
+- Real recommendations for cost optimization and language choice
+
+**Key insight**: LLM's first-pass correctness (3-14× variance within language) matters far more than language choice (~20-40% difference between languages).
+
+---
+
 ## Appendix: Test Run Counts
 
 | Run | Python | TypeScript | Go |
