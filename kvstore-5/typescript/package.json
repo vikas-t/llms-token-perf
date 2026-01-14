@@ -1,0 +1,21 @@
+{
+  "name": "kvstore-ts",
+  "version": "1.0.0",
+  "description": "Key-Value Store HTTP API in TypeScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["kvstore", "http", "api"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3"
+  }
+}
