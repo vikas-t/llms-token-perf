@@ -1,0 +1,314 @@
+{
+  "minigit-3": {
+    "py": {
+      "input_tokens": 78,
+      "output_tokens": 49933,
+      "cache_read_input_tokens": 10281435,
+      "cache_creation_input_tokens": 269837,
+      "total": 10601283,
+      "session_count": 2
+    },
+    "ts": {
+      "input_tokens": 235,
+      "output_tokens": 56946,
+      "cache_read_input_tokens": 12720372,
+      "cache_creation_input_tokens": 415128,
+      "total": 13192681,
+      "session_count": 3
+    },
+    "go": {
+      "input_tokens": 6,
+      "output_tokens": 56358,
+      "cache_read_input_tokens": 10467360,
+      "cache_creation_input_tokens": 244209,
+      "total": 10767933,
+      "session_count": 1
+    }
+  },
+  "minigit-4": {
+    "py": {
+      "input_tokens": 4261,
+      "output_tokens": 48114,
+      "cache_read_input_tokens": 9286956,
+      "cache_creation_input_tokens": 642927,
+      "total": 9982258,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 8,
+      "output_tokens": 86854,
+      "cache_read_input_tokens": 9655336,
+      "cache_creation_input_tokens": 521374,
+      "total": 10263572,
+      "session_count": 2
+    },
+    "go": {
+      "input_tokens": 78,
+      "output_tokens": 53433,
+      "cache_read_input_tokens": 7957102,
+      "cache_creation_input_tokens": 343410,
+      "total": 8354023,
+      "session_count": 1
+    }
+  },
+  "minigit-5": {
+    "py": {
+      "input_tokens": 229,
+      "output_tokens": 45572,
+      "cache_read_input_tokens": 6211431,
+      "cache_creation_input_tokens": 239493,
+      "total": 6496725,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 33,
+      "output_tokens": 63208,
+      "cache_read_input_tokens": 11931274,
+      "cache_creation_input_tokens": 367897,
+      "total": 12362412,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 644,
+      "output_tokens": 56000,
+      "cache_read_input_tokens": 14776051,
+      "cache_creation_input_tokens": 276338,
+      "total": 15109033,
+      "session_count": 1
+    }
+  },
+  "diffmerge-1": {
+    "py": {
+      "input_tokens": 4,
+      "output_tokens": 26964,
+      "cache_read_input_tokens": 3547030,
+      "cache_creation_input_tokens": 160042,
+      "total": 3734040,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 4,
+      "output_tokens": 16296,
+      "cache_read_input_tokens": 2694814,
+      "cache_creation_input_tokens": 142292,
+      "total": 2853406,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 24,
+      "output_tokens": 36546,
+      "cache_read_input_tokens": 15111380,
+      "cache_creation_input_tokens": 555648,
+      "total": 15703598,
+      "session_count": 1
+    }
+  },
+  "diffmerge-2": {
+    "py": {
+      "input_tokens": 1024,
+      "output_tokens": 26920,
+      "cache_read_input_tokens": 9220943,
+      "cache_creation_input_tokens": 250779,
+      "total": 9499666,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 2419,
+      "output_tokens": 28079,
+      "cache_read_input_tokens": 5074035,
+      "cache_creation_input_tokens": 200080,
+      "total": 5304613,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 796,
+      "output_tokens": 21795,
+      "cache_read_input_tokens": 6448881,
+      "cache_creation_input_tokens": 223630,
+      "total": 6695102,
+      "session_count": 1
+    }
+  },
+  "diffmerge-3": {
+    "py": {
+      "input_tokens": 811,
+      "output_tokens": 23947,
+      "cache_read_input_tokens": 4882147,
+      "cache_creation_input_tokens": 254438,
+      "total": 5161343,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 2,
+      "output_tokens": 26025,
+      "cache_read_input_tokens": 3956715,
+      "cache_creation_input_tokens": 164695,
+      "total": 4147437,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 82,
+      "output_tokens": 47338,
+      "cache_read_input_tokens": 11928751,
+      "cache_creation_input_tokens": 317833,
+      "total": 12294004,
+      "session_count": 1
+    }
+  },
+  "graphlib-1": {
+    "py": {
+      "input_tokens": 12,
+      "output_tokens": 36287,
+      "cache_read_input_tokens": 4785183,
+      "cache_creation_input_tokens": 425230,
+      "total": 5246712,
+      "session_count": 3
+    },
+    "ts": {
+      "input_tokens": 3532,
+      "output_tokens": 45341,
+      "cache_read_input_tokens": 8556302,
+      "cache_creation_input_tokens": 768129,
+      "total": 9373304,
+      "session_count": 3
+    },
+    "go": {
+      "input_tokens": 1617,
+      "output_tokens": 65200,
+      "cache_read_input_tokens": 20474113,
+      "cache_creation_input_tokens": 583283,
+      "total": 21124213,
+      "session_count": 3
+    }
+  },
+  "graphlib-2": {
+    "py": {
+      "input_tokens": 4,
+      "output_tokens": 19527,
+      "cache_read_input_tokens": 3462842,
+      "cache_creation_input_tokens": 196557,
+      "total": 3678930,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 4,
+      "output_tokens": 23096,
+      "cache_read_input_tokens": 5313951,
+      "cache_creation_input_tokens": 230910,
+      "total": 5567961,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 4,
+      "output_tokens": 35262,
+      "cache_read_input_tokens": 9753596,
+      "cache_creation_input_tokens": 203908,
+      "total": 9992770,
+      "session_count": 1
+    }
+  },
+  "graphlib-3": {
+    "py": {
+      "input_tokens": 4,
+      "output_tokens": 15560,
+      "cache_read_input_tokens": 2295987,
+      "cache_creation_input_tokens": 147763,
+      "total": 2459314,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 24,
+      "output_tokens": 19479,
+      "cache_read_input_tokens": 3612377,
+      "cache_creation_input_tokens": 363873,
+      "total": 3995753,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 7,
+      "output_tokens": 38118,
+      "cache_read_input_tokens": 15485404,
+      "cache_creation_input_tokens": 235330,
+      "total": 15758859,
+      "session_count": 1
+    }
+  },
+  "kvstore-3": {
+    "py": {
+      "input_tokens": 250,
+      "output_tokens": 18902,
+      "cache_read_input_tokens": 7637987,
+      "cache_creation_input_tokens": 249861,
+      "total": 7907000,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 168,
+      "output_tokens": 9097,
+      "cache_read_input_tokens": 3053801,
+      "cache_creation_input_tokens": 86624,
+      "total": 3149690,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 204,
+      "output_tokens": 10051,
+      "cache_read_input_tokens": 2112315,
+      "cache_creation_input_tokens": 118216,
+      "total": 2240786,
+      "session_count": 3
+    }
+  },
+  "kvstore-4": {
+    "py": {
+      "input_tokens": 389,
+      "output_tokens": 24402,
+      "cache_read_input_tokens": 12240801,
+      "cache_creation_input_tokens": 398440,
+      "total": 12664032,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 261,
+      "output_tokens": 8824,
+      "cache_read_input_tokens": 3040965,
+      "cache_creation_input_tokens": 92714,
+      "total": 3142764,
+      "session_count": 1
+    },
+    "go": {
+      "input_tokens": 129,
+      "output_tokens": 8019,
+      "cache_read_input_tokens": 1463584,
+      "cache_creation_input_tokens": 46353,
+      "total": 1518085,
+      "session_count": 1
+    }
+  },
+  "kvstore-5": {
+    "py": {
+      "input_tokens": 606,
+      "output_tokens": 11082,
+      "cache_read_input_tokens": 4111758,
+      "cache_creation_input_tokens": 165432,
+      "total": 4288878,
+      "session_count": 1
+    },
+    "ts": {
+      "input_tokens": 640,
+      "output_tokens": 41283,
+      "cache_read_input_tokens": 19040439,
+      "cache_creation_input_tokens": 420876,
+      "total": 19503238,
+      "session_count": 3
+    },
+    "go": {
+      "input_tokens": 384,
+      "output_tokens": 22552,
+      "cache_read_input_tokens": 5902964,
+      "cache_creation_input_tokens": 157787,
+      "total": 6083687,
+      "session_count": 3
+    }
+  }
+}
