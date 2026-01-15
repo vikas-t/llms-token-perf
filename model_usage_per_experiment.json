@@ -1,0 +1,396 @@
+{
+  "kvstore-3": {
+    "py": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 18902,
+          "total": 7907000,
+          "messages": 136
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    },
+    "ts": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 9097,
+          "total": 3149690,
+          "messages": 71
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    },
+    "go": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 10051,
+          "total": 2240786,
+          "messages": 64
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    }
+  },
+  "kvstore-4": {
+    "py": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 24402,
+          "total": 12664032,
+          "messages": 198
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    },
+    "ts": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 8824,
+          "total": 3142764,
+          "messages": 66
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    },
+    "go": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 8019,
+          "total": 1518085,
+          "messages": 42
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    }
+  },
+  "kvstore-5": {
+    "py": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 11082,
+          "total": 4288878,
+          "messages": 96
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    },
+    "ts": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 41283,
+          "total": 19503238,
+          "messages": 347
+        },
+        "<synthetic>": {
+          "output_tokens": 0,
+          "total": 0,
+          "messages": 25
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    },
+    "go": {
+      "models": {
+        "claude-sonnet-4-5-20250929": {
+          "output_tokens": 22552,
+          "total": 6083687,
+          "messages": 133
+        },
+        "<synthetic>": {
+          "output_tokens": 0,
+          "total": 0,
+          "messages": 22
+        }
+      },
+      "dominant": "claude-sonnet-4-5-20250929"
+    }
+  },
+  "graphlib-1": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 36287,
+          "total": 5246712,
+          "messages": 92
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 45341,
+          "total": 9373304,
+          "messages": 140
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 65200,
+          "total": 21124213,
+          "messages": 230
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "graphlib-2": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 19527,
+          "total": 3678930,
+          "messages": 53
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 23096,
+          "total": 5567961,
+          "messages": 71
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 35262,
+          "total": 9992770,
+          "messages": 113
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "graphlib-3": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 15560,
+          "total": 2459314,
+          "messages": 40
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 19479,
+          "total": 3995753,
+          "messages": 56
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 38118,
+          "total": 15758859,
+          "messages": 158
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "diffmerge-1": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 26964,
+          "total": 3734040,
+          "messages": 53
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 16296,
+          "total": 2853406,
+          "messages": 47
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 36546,
+          "total": 15703598,
+          "messages": 176
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "diffmerge-2": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 26920,
+          "total": 9499666,
+          "messages": 127
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 28079,
+          "total": 5304613,
+          "messages": 78
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 21795,
+          "total": 6695102,
+          "messages": 99
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "diffmerge-3": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 23947,
+          "total": 5161343,
+          "messages": 75
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 26025,
+          "total": 4147437,
+          "messages": 56
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 47338,
+          "total": 12294004,
+          "messages": 167
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "minigit-3": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 49933,
+          "total": 10601283,
+          "messages": 117
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 56946,
+          "total": 13192681,
+          "messages": 153
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 56358,
+          "total": 10767933,
+          "messages": 108
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "minigit-4": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 48114,
+          "total": 9982258,
+          "messages": 104
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 86854,
+          "total": 10263572,
+          "messages": 135
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 53433,
+          "total": 8354023,
+          "messages": 91
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  },
+  "minigit-5": {
+    "py": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 45572,
+          "total": 6496725,
+          "messages": 82
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "ts": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 63208,
+          "total": 12362412,
+          "messages": 135
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    },
+    "go": {
+      "models": {
+        "claude-opus-4-5-20251101": {
+          "output_tokens": 56000,
+          "total": 15109033,
+          "messages": 140
+        }
+      },
+      "dominant": "claude-opus-4-5-20251101"
+    }
+  }
+}

@@ -13,6 +13,10 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
   - Secondary: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) - planning and simpler tasks
   - **Actual usage**: 79.8% Opus (239.7M tokens), 20.2% Sonnet (60.5M tokens) across all experiments
   - Sonnet used for initial planning, exploration, and some debugging phases
+  - **Model consistency verified**: ALL 12 experiments used 100% consistent models across all 3 languages
+    - kvstore (all 3 runs): Sonnet only
+    - graphlib, diffmerge, minigit (all 9 runs): Opus only
+    - This ensures fair comparisons - measuring language efficiency, not model differences
 - **Tool**: Claude Code CLI
 - **Experiments**: 4 projects × multiple runs = 12 fair comparison runs (36 total implementations)
 - **Metrics**:
@@ -27,6 +31,8 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 ## Results by Project
 
 ### kvstore (Key-Value Store - 52 tests)
+
+**Model**: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929) - 100% consistency across all 3 languages
 
 | Run | Python | TypeScript | Go | Winner |
 |-----|--------|------------|-----|--------|
@@ -79,6 +85,8 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 
 ### graphlib (Graph Library - 150 tests)
 
+**Model**: Claude Opus 4.5 (claude-opus-4-5-20251101) - 100% consistency across all 3 languages
+
 | Run | Python | TypeScript | Go | Winner |
 |-----|--------|------------|-----|--------|
 | graphlib-1 | **5,246,712** | 9,373,304 | 21,124,213 | Python |
@@ -127,6 +135,8 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 
 
 ### diffmerge (Diff/Merge Library - 125 tests)
+
+**Model**: Claude Opus 4.5 (claude-opus-4-5-20251101) - 100% consistency across all 3 languages
 
 | Run | Python | TypeScript | Go | Winner |
 |-----|--------|------------|-----|--------|
@@ -178,6 +188,8 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 
 
 ### minigit (Git Implementation - 125 tests)
+
+**Model**: Claude Opus 4.5 (claude-opus-4-5-20251101) - 100% consistency across all 3 languages
 
 | Run | Python | TypeScript | Go | Winner |
 |-----|--------|------------|-----|--------|
