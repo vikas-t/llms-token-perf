@@ -26,51 +26,105 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 
 ## Results by Project
 
-### minigit (Git Implementation - 125 tests)
+### kvstore (Key-Value Store - 52 tests)
 
 | Run | Python | TypeScript | Go | Winner |
 |-----|--------|------------|-----|--------|
-| minigit-3 | **10,601,283** | 13,192,681 | 10,767,933 | Python |
-| | Output: 49,933 | Output: 56,946 | Output: 56,358 | |
-| | Cache: 10,551,272 | Cache: 13,135,500 | Cache: 10,711,569 | |
-| minigit-4 | 9,982,258 | 10,263,572 | **8,354,023** | Go |
-| | Output: 48,114 | Output: 86,854 | Output: 53,433 | |
-| | Cache: 9,929,883 | Cache: 10,176,710 | Cache: 8,300,512 | |
-| minigit-5 | **6,496,725** | 12,362,412 | 15,109,033 | Python |
-| | Output: 45,572 | Output: 63,208 | Output: 56,000 | |
-| | Cache: 6,450,924 | Cache: 12,299,171 | Cache: 15,052,389 | |
+| kvstore-3 | 7,907,000 | 3,149,690 | **2,240,786** | Go |
+| | Output: 18,902 | Output: 9,097 | Output: 10,051 | |
+| | Cache: 7,887,848 | Cache: 3,140,425 | Cache: 2,230,531 | |
+| kvstore-4 | 12,664,032 | 3,142,764 | **1,518,085** | Go |
+| | Output: 24,402 | Output: 8,824 | Output: 8,019 | |
+| | Cache: 12,639,241 | Cache: 3,133,679 | Cache: 1,509,937 | |
+| kvstore-5 | **4,288,878** | 19,503,238 | 6,083,687 | Python |
+| | Output: 11,082 | Output: 41,283 | Output: 22,552 | |
+| | Cache: 4,277,190 | Cache: 19,461,315 | Cache: 6,060,751 | |
 
 *(Cache = cache_read + cache_creation tokens)*
 
-#### minigit-3 Analysis
-- **Winner**: Python (10.6M tokens, 2 test runs, 50K output tokens)
-- **Loser**: TypeScript (13.2M tokens, 1.24x, 57K output tokens)
-- **Reason**: TypeScript had 4 test runs with 22 FAILED mentions vs Python's 2 test runs with 18 FAILED. Specific failure modes:
-  - **Branch management bugs**: `getCurrentBranch()` returned incorrect refs when HEAD was detached, requiring multiple iterations to handle edge cases in symbolic-ref parsing
-  - **Commit history traversal**: `getHistory()` had off-by-one errors in commit limit counting and failed to properly traverse merge commits with multiple parents
-  - **File tree reconstruction**: Blob decompression errors when reading compressed objects from `.minigit/objects`, requiring fixes to zlib handling
-  - TypeScript's stricter type system ironically introduced more edge case bugs that required debugging across multiple test cycles
+#### kvstore-3 Analysis
+- **Winner**: Go (2.2M tokens, 3 test runs, 10K output tokens - most efficient)
+- **Loser**: Python (7.9M tokens, 3.53x, 19K output tokens - 90% more code for 3.5x debugging cost)
+- **Reason**: Python had 16 test runs with 89 FAILED mentions vs TypeScript's 9 test runs with 8 FAILED and Go's 3 with 0 FAILED:
+  - **TTL expiration bugs** (Python): Background thread for TTL cleanup had race conditions with main thread; expired keys returned before deletion; timer precision issues caused flaky tests
+  - **WAL replay bugs**: File pointer management during crash recovery corrupted data; incomplete transactions not properly rolled back; duplicate entries during replay caused key overwrites
+  - **Concurrency issues**: Python's threading.Lock used incorrectly (locked in one method, unlocked in another); GIL assumptions led to missing locks on critical sections; dictionary modifications during iteration caused RuntimeError
+  - **Why 89 FAILED**: Each concurrency bug caused 10-15 tests to fail (race conditions manifest in multiple test scenarios); WAL bugs caused another 20 failures; TTL bugs caused 30+ failures
+  - **Why Go dominated**: Goroutines + channels + sync.Mutex worked correctly from the start; WAL file I/O with explicit error handling caught edge cases early; Go's map access is automatically race-detected in tests
 
-#### minigit-4 Analysis
-- **Winner**: Go (8.4M tokens, 7 test runs, 53K output tokens)
-- **Loser**: TypeScript (10.3M tokens, 1.23x, 87K output tokens - 63% more code generation)
-- **Reason**: Go had 7 test runs with 16 FAILED mentions vs TypeScript's 6 test runs with 4 FAILED and Python's 6 with 24 FAILED. Specific issues:
-  - **Python failures**: Staging area corruption when handling binary files, incorrect SHA-1 hash computation for large files, tree object serialization bugs producing malformed git objects
-  - **TypeScript failures**: Async/await handling in blob writes causing race conditions, file descriptor leaks in large repos
-  - **Go's advantage**: Simple error handling with explicit error returns caught issues early; native byte manipulation for SHA-1/zlib worked correctly on first try; struct-based tree objects serialized cleanly without manual JSON gymnastics
-  - Despite more test runs, Go's failures were simpler to fix (mostly boundary conditions in slice operations)
+#### kvstore-4 Analysis
+- **Winner**: Go (1.5M tokens, 6 test runs, 8K output tokens - smallest codebase)
+- **Loser**: Python (12.7M tokens, 8.34x, 24K output tokens - 3x more code for 8x debugging cost)
+- **Reason**: Python had 22 test runs with 108 FAILED mentions - WORST performance across all 36 implementations:
+  - **Cascading persistence failures**: WAL writes buffered incorrectly, causing data loss on crash; fsync() calls missing or in wrong places; file truncation during compaction corrupted entire database
+  - **TTL edge cases**: Expired keys not removed before WAL replay, causing zombie entries; TTL values not persisted in WAL, lost after restart; concurrent TTL updates raced with expiration thread
+  - **Race conditions under load**: Dictionary resize during concurrent operations caused crashes; lock contention deadlocked on nested operations (get → set → get); thread pool exhaustion on high concurrent load
+  - **Why 108 FAILED**: Each iteration fixed 3-5 failures but introduced 2-3 new ones; cascading nature meant fixing WAL broke TTL, fixing TTL broke concurrency, fixing concurrency broke WAL
+  - **Why 22 iterations**: Fundamental architecture problems required 3 complete rewrites; each rewrite had 5-7 debugging cycles; final 4 runs fixed edge cases
+  - **Go's dominance**: Channels for async operations avoided race conditions; sync.RWMutex prevented deadlocks; file I/O with defer for cleanup prevented corruption; Go's simplicity meant fewer moving parts to break
 
-#### minigit-5 Analysis
-- **Winner**: Python (6.5M tokens, 2 test runs, 46K output tokens)
-- **Loser**: Go (15.1M tokens, 2.33x, 56K output tokens - similar code size but 2.3x debugging cost)
-- **Reason**: Go had 11 test runs with 41 FAILED mentions vs Python's 2 test runs with 9 FAILED and TypeScript's 6 with 8 FAILED. Catastrophic cascade:
-  - **Root cause**: Go's `merge3()` implementation had fundamental logic error in conflict detection - failed to distinguish clean merges from conflicting changes when base, left, and right hunks overlapped
-  - **Cascade effect**: This core bug infected every merge operation, causing ~50% of merge tests to fail initially
-  - **Iteration spiral**: Each fix exposed new edge cases: empty file merges, whitespace-only changes, identical changes on both sides, binary file conflicts
-  - **Why Python won**: Python's list slicing and tuple unpacking made the merge3 algorithm more intuitive to implement; Go's slice manipulation with indices was more error-prone
-  - **Why it took 11 runs**: Go required complete rewrites of the conflict resolution logic twice (6 runs), then edge case fixes (5 runs), vs Python getting it mostly right in 2 runs
+#### kvstore-5 Analysis
+- **Winner**: Python (4.3M tokens, 9 test runs, 11K output tokens)
+- **Loser**: TypeScript (19.5M tokens, 4.55x, 41K output tokens - 3.7x more code generated)
+- **Reason**: Complete reversal from kvstore-3/4! TypeScript had 28 test runs with 260 FAILED mentions - catastrophic failure:
+  - **TypeScript's WAL corruption**: Async/await in Node.js caused write reordering; fs.writeFile promises not awaited properly, leading to partial writes; stream buffering caused entries to be written out of order
+  - **Concurrent request handling**: Express middleware shared mutable state across requests; race conditions in route handlers modifying store; async operations interleaved incorrectly (read → write → read returned stale data)
+  - **TTL cleanup chaos**: setTimeout-based expiration didn't fire reliably under load; event loop starvation caused cleanup delays; memory leaks from unawaited promises in cleanup tasks
+  - **Go's struggles** (356 FAILED, 14 runs): Channel deadlocks when mixing buffered/unbuffered channels; goroutine leaks from unclosed channels; mutex lock ordering caused deadlocks between WAL writer and reader goroutines
+  - **Why Python won**: Simple threading.Lock + Queue avoided Go's channel complexity; synchronous file I/O avoided TypeScript's async chaos; single-threaded event loop with explicit locks was easier to reason about than goroutines or async/await
+  - **The variance lesson**: Same task, three wildly different outcomes - showing LLM's first-pass correctness matters more than language choice
 
 ---
+
+
+### graphlib (Graph Library - 150 tests)
+
+| Run | Python | TypeScript | Go | Winner |
+|-----|--------|------------|-----|--------|
+| graphlib-1 | **5,246,712** | 9,373,304 | 21,124,213 | Python |
+| | Output: 36,287 | Output: 45,341 | Output: 65,200 | |
+| | Cache: 5,210,413 | Cache: 9,324,431 | Cache: 21,057,396 | |
+| graphlib-2 | **3,678,930** | 5,567,961 | 9,992,770 | Python |
+| | Output: 19,527 | Output: 23,096 | Output: 35,262 | |
+| | Cache: 3,659,399 | Cache: 5,544,861 | Cache: 9,957,504 | |
+| graphlib-3 | **2,459,314** | 3,995,753 | 15,758,859 | Python |
+| | Output: 15,560 | Output: 19,479 | Output: 38,118 | |
+| | Cache: 2,443,750 | Cache: 3,976,250 | Cache: 15,720,734 | |
+
+*(Cache = cache_read + cache_creation tokens)*
+
+#### graphlib-1 Analysis
+- **Winner**: Python (5.2M tokens, 4 test runs, 36K output tokens)
+- **Loser**: Go (21.1M tokens, 4.03x, 65K output tokens - 80% more code for 4x debugging cost)
+- **Reason**: Go had 14 test runs with 818 FAILED mentions - severe algorithm implementation bugs:
+  - **DFS/BFS traversal bugs**: Visited node tracking used map keys incorrectly, causing infinite loops on cyclic graphs; stack/queue implementations mixed up push/pop operations
+  - **Tarjan's SCC algorithm**: Off-by-one errors in lowlink value calculations; recursion stack management corrupted state across multiple component discoveries
+  - **Topological sort**: Failed to detect cycles properly (returned partial ordering instead of error); incorrect handling of graphs with multiple valid orderings
+  - **Why 818 FAILED**: Complex algorithms like SCC, articulation points, and biconnected components each had 3-5 bugs that caused 50-100 test failures each
+  - **Why 14 runs**: Each algorithm required 2-3 complete rewrites after reading Wikipedia/textbook references; Go's manual memory management for graph structures (adjacency lists as slices of slices) was error-prone
+  - **Python's advantage**: Clean dict-based adjacency lists, intuitive list/set operations for visited tracking, built-in recursion limit handling
+
+#### graphlib-2 Analysis
+- **Winner**: Python (3.7M tokens, 6 test runs, 20K output tokens)
+- **Loser**: Go (10.0M tokens, 2.72x, 35K output tokens - 75% more code)
+- **Reason**: Go had 6 test runs with 560 FAILED mentions vs Python's 6 test runs with 192 FAILED and TypeScript's 10 with 96 FAILED:
+  - **Tarjan's algorithm bugs** (Go): Stack index tracking off by one; lowlink updates used wrong comparison operators (`<` instead of `<=`); component extraction popped wrong number of nodes
+  - **Python's failures**: Simpler issues like incorrect initialization of discovery times, but each fix resolved 20-30 tests vs Go where each fix resolved only 5-10
+  - **Why Go had 3x more FAILED with same test runs**: Go's bugs were more fundamental (wrong algorithm logic) vs Python's bugs were edge cases (empty graphs, single-node SCCs)
+  - **Root cause**: Go's implementation used manual stack management with indices; Python used built-in list operations that were harder to mess up
+
+#### graphlib-3 Analysis
+- **Winner**: Python (2.5M tokens, 2 test runs, 16K output tokens - cleanest implementation)
+- **Loser**: Go (15.8M tokens, 6.41x, 38K output tokens - 2.4x more code)
+- **Reason**: Go had 8 test runs with 416 FAILED mentions vs Python's 2 test runs with 12 FAILED and TypeScript's 6 with 8 FAILED:
+  - **Priority queue bugs** (Go): Min-heap implementation had parent/child index calculations wrong (`2*i+1` vs `2*i`); heap property violated after decrease-key operations
+  - **Dijkstra's algorithm**: Distance updates used wrong comparison logic; predecessor tracking corrupted during path reconstruction; failed to handle negative weights (should error, instead returned wrong paths)
+  - **Bellman-Ford**: Relaxation loop iterated wrong number of times (V instead of V-1); negative cycle detection reported false positives
+  - **Why 416 FAILED**: Shortest path algorithms are tested with many graph configurations (sparse/dense, weighted/unweighted, cyclic/acyclic); broken priority queue caused cascading failures across all variations
+  - **Why Python won easily**: `heapq` standard library provided correct min-heap; just had to implement algorithm logic correctly; Go required manual heap implementation that had fundamental bugs
+
+---
+
 
 ### diffmerge (Diff/Merge Library - 125 tests)
 
@@ -122,101 +176,50 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 
 ---
 
-### graphlib (Graph Library - 150 tests)
+
+### minigit (Git Implementation - 125 tests)
 
 | Run | Python | TypeScript | Go | Winner |
 |-----|--------|------------|-----|--------|
-| graphlib-1 | **5,246,712** | 9,373,304 | 21,124,213 | Python |
-| | Output: 36,287 | Output: 45,341 | Output: 65,200 | |
-| | Cache: 5,210,413 | Cache: 9,324,431 | Cache: 21,057,396 | |
-| graphlib-2 | **3,678,930** | 5,567,961 | 9,992,770 | Python |
-| | Output: 19,527 | Output: 23,096 | Output: 35,262 | |
-| | Cache: 3,659,399 | Cache: 5,544,861 | Cache: 9,957,504 | |
-| graphlib-3 | **2,459,314** | 3,995,753 | 15,758,859 | Python |
-| | Output: 15,560 | Output: 19,479 | Output: 38,118 | |
-| | Cache: 2,443,750 | Cache: 3,976,250 | Cache: 15,720,734 | |
+| minigit-3 | **10,601,283** | 13,192,681 | 10,767,933 | Python |
+| | Output: 49,933 | Output: 56,946 | Output: 56,358 | |
+| | Cache: 10,551,272 | Cache: 13,135,500 | Cache: 10,711,569 | |
+| minigit-4 | 9,982,258 | 10,263,572 | **8,354,023** | Go |
+| | Output: 48,114 | Output: 86,854 | Output: 53,433 | |
+| | Cache: 9,929,883 | Cache: 10,176,710 | Cache: 8,300,512 | |
+| minigit-5 | **6,496,725** | 12,362,412 | 15,109,033 | Python |
+| | Output: 45,572 | Output: 63,208 | Output: 56,000 | |
+| | Cache: 6,450,924 | Cache: 12,299,171 | Cache: 15,052,389 | |
 
 *(Cache = cache_read + cache_creation tokens)*
 
-#### graphlib-1 Analysis
-- **Winner**: Python (5.2M tokens, 4 test runs, 36K output tokens)
-- **Loser**: Go (21.1M tokens, 4.03x, 65K output tokens - 80% more code for 4x debugging cost)
-- **Reason**: Go had 14 test runs with 818 FAILED mentions - severe algorithm implementation bugs:
-  - **DFS/BFS traversal bugs**: Visited node tracking used map keys incorrectly, causing infinite loops on cyclic graphs; stack/queue implementations mixed up push/pop operations
-  - **Tarjan's SCC algorithm**: Off-by-one errors in lowlink value calculations; recursion stack management corrupted state across multiple component discoveries
-  - **Topological sort**: Failed to detect cycles properly (returned partial ordering instead of error); incorrect handling of graphs with multiple valid orderings
-  - **Why 818 FAILED**: Complex algorithms like SCC, articulation points, and biconnected components each had 3-5 bugs that caused 50-100 test failures each
-  - **Why 14 runs**: Each algorithm required 2-3 complete rewrites after reading Wikipedia/textbook references; Go's manual memory management for graph structures (adjacency lists as slices of slices) was error-prone
-  - **Python's advantage**: Clean dict-based adjacency lists, intuitive list/set operations for visited tracking, built-in recursion limit handling
+#### minigit-3 Analysis
+- **Winner**: Python (10.6M tokens, 2 test runs, 50K output tokens)
+- **Loser**: TypeScript (13.2M tokens, 1.24x, 57K output tokens)
+- **Reason**: TypeScript had 4 test runs with 22 FAILED mentions vs Python's 2 test runs with 18 FAILED. Specific failure modes:
+  - **Branch management bugs**: `getCurrentBranch()` returned incorrect refs when HEAD was detached, requiring multiple iterations to handle edge cases in symbolic-ref parsing
+  - **Commit history traversal**: `getHistory()` had off-by-one errors in commit limit counting and failed to properly traverse merge commits with multiple parents
+  - **File tree reconstruction**: Blob decompression errors when reading compressed objects from `.minigit/objects`, requiring fixes to zlib handling
+  - TypeScript's stricter type system ironically introduced more edge case bugs that required debugging across multiple test cycles
 
-#### graphlib-2 Analysis
-- **Winner**: Python (3.7M tokens, 6 test runs, 20K output tokens)
-- **Loser**: Go (10.0M tokens, 2.72x, 35K output tokens - 75% more code)
-- **Reason**: Go had 6 test runs with 560 FAILED mentions vs Python's 6 test runs with 192 FAILED and TypeScript's 10 with 96 FAILED:
-  - **Tarjan's algorithm bugs** (Go): Stack index tracking off by one; lowlink updates used wrong comparison operators (`<` instead of `<=`); component extraction popped wrong number of nodes
-  - **Python's failures**: Simpler issues like incorrect initialization of discovery times, but each fix resolved 20-30 tests vs Go where each fix resolved only 5-10
-  - **Why Go had 3x more FAILED with same test runs**: Go's bugs were more fundamental (wrong algorithm logic) vs Python's bugs were edge cases (empty graphs, single-node SCCs)
-  - **Root cause**: Go's implementation used manual stack management with indices; Python used built-in list operations that were harder to mess up
+#### minigit-4 Analysis
+- **Winner**: Go (8.4M tokens, 7 test runs, 53K output tokens)
+- **Loser**: TypeScript (10.3M tokens, 1.23x, 87K output tokens - 63% more code generation)
+- **Reason**: Go had 7 test runs with 16 FAILED mentions vs TypeScript's 6 test runs with 4 FAILED and Python's 6 with 24 FAILED. Specific issues:
+  - **Python failures**: Staging area corruption when handling binary files, incorrect SHA-1 hash computation for large files, tree object serialization bugs producing malformed git objects
+  - **TypeScript failures**: Async/await handling in blob writes causing race conditions, file descriptor leaks in large repos
+  - **Go's advantage**: Simple error handling with explicit error returns caught issues early; native byte manipulation for SHA-1/zlib worked correctly on first try; struct-based tree objects serialized cleanly without manual JSON gymnastics
+  - Despite more test runs, Go's failures were simpler to fix (mostly boundary conditions in slice operations)
 
-#### graphlib-3 Analysis
-- **Winner**: Python (2.5M tokens, 2 test runs, 16K output tokens - cleanest implementation)
-- **Loser**: Go (15.8M tokens, 6.41x, 38K output tokens - 2.4x more code)
-- **Reason**: Go had 8 test runs with 416 FAILED mentions vs Python's 2 test runs with 12 FAILED and TypeScript's 6 with 8 FAILED:
-  - **Priority queue bugs** (Go): Min-heap implementation had parent/child index calculations wrong (`2*i+1` vs `2*i`); heap property violated after decrease-key operations
-  - **Dijkstra's algorithm**: Distance updates used wrong comparison logic; predecessor tracking corrupted during path reconstruction; failed to handle negative weights (should error, instead returned wrong paths)
-  - **Bellman-Ford**: Relaxation loop iterated wrong number of times (V instead of V-1); negative cycle detection reported false positives
-  - **Why 416 FAILED**: Shortest path algorithms are tested with many graph configurations (sparse/dense, weighted/unweighted, cyclic/acyclic); broken priority queue caused cascading failures across all variations
-  - **Why Python won easily**: `heapq` standard library provided correct min-heap; just had to implement algorithm logic correctly; Go required manual heap implementation that had fundamental bugs
-
----
-
-### kvstore (Key-Value Store - 52 tests)
-
-| Run | Python | TypeScript | Go | Winner |
-|-----|--------|------------|-----|--------|
-| kvstore-3 | 7,907,000 | 3,149,690 | **2,240,786** | Go |
-| | Output: 18,902 | Output: 9,097 | Output: 10,051 | |
-| | Cache: 7,887,848 | Cache: 3,140,425 | Cache: 2,230,531 | |
-| kvstore-4 | 12,664,032 | 3,142,764 | **1,518,085** | Go |
-| | Output: 24,402 | Output: 8,824 | Output: 8,019 | |
-| | Cache: 12,639,241 | Cache: 3,133,679 | Cache: 1,509,937 | |
-| kvstore-5 | **4,288,878** | 19,503,238 | 6,083,687 | Python |
-| | Output: 11,082 | Output: 41,283 | Output: 22,552 | |
-| | Cache: 4,277,190 | Cache: 19,461,315 | Cache: 6,060,751 | |
-
-*(Cache = cache_read + cache_creation tokens)*
-
-#### kvstore-3 Analysis
-- **Winner**: Go (2.2M tokens, 3 test runs, 10K output tokens - most efficient)
-- **Loser**: Python (7.9M tokens, 3.53x, 19K output tokens - 90% more code for 3.5x debugging cost)
-- **Reason**: Python had 16 test runs with 89 FAILED mentions vs TypeScript's 9 test runs with 8 FAILED and Go's 3 with 0 FAILED:
-  - **TTL expiration bugs** (Python): Background thread for TTL cleanup had race conditions with main thread; expired keys returned before deletion; timer precision issues caused flaky tests
-  - **WAL replay bugs**: File pointer management during crash recovery corrupted data; incomplete transactions not properly rolled back; duplicate entries during replay caused key overwrites
-  - **Concurrency issues**: Python's threading.Lock used incorrectly (locked in one method, unlocked in another); GIL assumptions led to missing locks on critical sections; dictionary modifications during iteration caused RuntimeError
-  - **Why 89 FAILED**: Each concurrency bug caused 10-15 tests to fail (race conditions manifest in multiple test scenarios); WAL bugs caused another 20 failures; TTL bugs caused 30+ failures
-  - **Why Go dominated**: Goroutines + channels + sync.Mutex worked correctly from the start; WAL file I/O with explicit error handling caught edge cases early; Go's map access is automatically race-detected in tests
-
-#### kvstore-4 Analysis
-- **Winner**: Go (1.5M tokens, 6 test runs, 8K output tokens - smallest codebase)
-- **Loser**: Python (12.7M tokens, 8.34x, 24K output tokens - 3x more code for 8x debugging cost)
-- **Reason**: Python had 22 test runs with 108 FAILED mentions - WORST performance across all 36 implementations:
-  - **Cascading persistence failures**: WAL writes buffered incorrectly, causing data loss on crash; fsync() calls missing or in wrong places; file truncation during compaction corrupted entire database
-  - **TTL edge cases**: Expired keys not removed before WAL replay, causing zombie entries; TTL values not persisted in WAL, lost after restart; concurrent TTL updates raced with expiration thread
-  - **Race conditions under load**: Dictionary resize during concurrent operations caused crashes; lock contention deadlocked on nested operations (get → set → get); thread pool exhaustion on high concurrent load
-  - **Why 108 FAILED**: Each iteration fixed 3-5 failures but introduced 2-3 new ones; cascading nature meant fixing WAL broke TTL, fixing TTL broke concurrency, fixing concurrency broke WAL
-  - **Why 22 iterations**: Fundamental architecture problems required 3 complete rewrites; each rewrite had 5-7 debugging cycles; final 4 runs fixed edge cases
-  - **Go's dominance**: Channels for async operations avoided race conditions; sync.RWMutex prevented deadlocks; file I/O with defer for cleanup prevented corruption; Go's simplicity meant fewer moving parts to break
-
-#### kvstore-5 Analysis
-- **Winner**: Python (4.3M tokens, 9 test runs, 11K output tokens)
-- **Loser**: TypeScript (19.5M tokens, 4.55x, 41K output tokens - 3.7x more code generated)
-- **Reason**: Complete reversal from kvstore-3/4! TypeScript had 28 test runs with 260 FAILED mentions - catastrophic failure:
-  - **TypeScript's WAL corruption**: Async/await in Node.js caused write reordering; fs.writeFile promises not awaited properly, leading to partial writes; stream buffering caused entries to be written out of order
-  - **Concurrent request handling**: Express middleware shared mutable state across requests; race conditions in route handlers modifying store; async operations interleaved incorrectly (read → write → read returned stale data)
-  - **TTL cleanup chaos**: setTimeout-based expiration didn't fire reliably under load; event loop starvation caused cleanup delays; memory leaks from unawaited promises in cleanup tasks
-  - **Go's struggles** (356 FAILED, 14 runs): Channel deadlocks when mixing buffered/unbuffered channels; goroutine leaks from unclosed channels; mutex lock ordering caused deadlocks between WAL writer and reader goroutines
-  - **Why Python won**: Simple threading.Lock + Queue avoided Go's channel complexity; synchronous file I/O avoided TypeScript's async chaos; single-threaded event loop with explicit locks was easier to reason about than goroutines or async/await
-  - **The variance lesson**: Same task, three wildly different outcomes - showing LLM's first-pass correctness matters more than language choice
+#### minigit-5 Analysis
+- **Winner**: Python (6.5M tokens, 2 test runs, 46K output tokens)
+- **Loser**: Go (15.1M tokens, 2.33x, 56K output tokens - similar code size but 2.3x debugging cost)
+- **Reason**: Go had 11 test runs with 41 FAILED mentions vs Python's 2 test runs with 9 FAILED and TypeScript's 6 with 8 FAILED. Catastrophic cascade:
+  - **Root cause**: Go's `merge3()` implementation had fundamental logic error in conflict detection - failed to distinguish clean merges from conflicting changes when base, left, and right hunks overlapped
+  - **Cascade effect**: This core bug infected every merge operation, causing ~50% of merge tests to fail initially
+  - **Iteration spiral**: Each fix exposed new edge cases: empty file merges, whitespace-only changes, identical changes on both sides, binary file conflicts
+  - **Why Python won**: Python's list slicing and tuple unpacking made the merge3 algorithm more intuitive to implement; Go's slice manipulation with indices was more error-prone
+  - **Why it took 11 runs**: Go required complete rewrites of the conflict resolution logic twice (6 runs), then edge case fixes (5 runs), vs Python getting it mostly right in 2 runs
 
 ---
 
@@ -234,27 +237,27 @@ This study analyzed LLM token consumption across Python, TypeScript, and Go impl
 
 | Project | Python | TypeScript | Go | Best |
 |---------|--------|------------|-----|------|
-| minigit-3 | **10,601,283** | 13,192,681 | 10,767,933 | Python |
-| minigit-4 | 9,982,258 | 10,263,572 | **8,354,023** | Go |
-| minigit-5 | **6,496,725** | 12,362,412 | 15,109,033 | Python |
-| diffmerge-1 | 3,734,040 | **2,853,406** | 15,703,598 | TypeScript |
-| diffmerge-2 | 9,499,666 | **5,304,613** | 6,695,102 | TypeScript |
-| diffmerge-3 | 5,161,343 | **4,147,437** | 12,294,004 | TypeScript |
-| graphlib-1 | **5,246,712** | 9,373,304 | 21,124,213 | Python |
-| graphlib-2 | **3,678,930** | 5,567,961 | 9,992,770 | Python |
-| graphlib-3 | **2,459,314** | 3,995,753 | 15,758,859 | Python |
 | kvstore-3 | 7,907,000 | 3,149,690 | **2,240,786** | Go |
 | kvstore-4 | 12,664,032 | 3,142,764 | **1,518,085** | Go |
 | kvstore-5 | **4,288,878** | 19,503,238 | 6,083,687 | Python |
+| graphlib-1 | **5,246,712** | 9,373,304 | 21,124,213 | Python |
+| graphlib-2 | **3,678,930** | 5,567,961 | 9,992,770 | Python |
+| graphlib-3 | **2,459,314** | 3,995,753 | 15,758,859 | Python |
+| diffmerge-1 | 3,734,040 | **2,853,406** | 15,703,598 | TypeScript |
+| diffmerge-2 | 9,499,666 | **5,304,613** | 6,695,102 | TypeScript |
+| diffmerge-3 | 5,161,343 | **4,147,437** | 12,294,004 | TypeScript |
+| minigit-3 | **10,601,283** | 13,192,681 | 10,767,933 | Python |
+| minigit-4 | 9,982,258 | 10,263,572 | **8,354,023** | Go |
+| minigit-5 | **6,496,725** | 12,362,412 | 15,109,033 | Python |
 
 ### Average Tokens by Project Type
 
-| Project | Python Avg | TypeScript Avg | Go Avg | Best Avg |
-|---------|-----------|----------------|--------|----------|
-| minigit (3 runs) | **9,026,755** | 11,939,555 | 11,410,330 | Python |
-| diffmerge (3 runs) | 6,131,683 | **4,101,819** | 11,564,235 | TypeScript |
-| graphlib (3 runs) | **3,794,985** | 6,312,339 | 15,625,281 | Python |
-| kvstore (3 runs) | 8,286,637 | 8,598,564 | **3,280,853** | Go |
+| Project | LOC | Python Avg | TypeScript Avg | Go Avg | Best Avg |
+|---------|-----|-----------|----------------|--------|----------|
+| kvstore (~468 LOC, 52 tests) | ~470 | 8,286,637 | 8,598,564 | **3,280,853** | Go |
+| graphlib (~904 LOC, 150 tests) | ~900 | **3,794,985** | 6,312,339 | 15,625,281 | Python |
+| diffmerge (~1,550 LOC, 125 tests) | ~1,550 | 6,131,683 | **4,101,819** | 11,564,235 | TypeScript |
+| minigit (~4,153 LOC, 125 tests) | ~4,150 | **9,026,755** | 11,939,555 | 11,410,330 | Python |
 
 ---
 
@@ -355,34 +358,34 @@ See [PRACTICAL_IMPACT.md](PRACTICAL_IMPACT.md) for detailed analysis of:
 
 | Run | Python | TypeScript | Go |
 |-----|--------|------------|-----|
-| minigit-3 | 2 | 4 | 4 |
-| minigit-4 | 6 | 6 | 7 |
-| minigit-5 | 2 | 6 | 11 |
-| diffmerge-1 | 2 | 4 | 9 |
-| diffmerge-2 | 17 | 4 | 7 |
-| diffmerge-3 | 2 | 4 | 14 |
-| graphlib-1 | 4 | 8 | 14 |
-| graphlib-2 | 6 | 10 | 6 |
-| graphlib-3 | 2 | 6 | 8 |
 | kvstore-3 | 16 | 9 | 3 |
 | kvstore-4 | 22 | 11 | 6 |
 | kvstore-5 | 9 | 28 | 14 |
+| graphlib-1 | 4 | 8 | 14 |
+| graphlib-2 | 6 | 10 | 6 |
+| graphlib-3 | 2 | 6 | 8 |
+| diffmerge-1 | 2 | 4 | 9 |
+| diffmerge-2 | 17 | 4 | 7 |
+| diffmerge-3 | 2 | 4 | 14 |
+| minigit-3 | 2 | 4 | 4 |
+| minigit-4 | 6 | 6 | 7 |
+| minigit-5 | 2 | 6 | 11 |
 | **Total** | **90** | **100** | **103** |
 
 ### FAILED Mentions by Run
 
 | Run | Python | TypeScript | Go |
 |-----|--------|------------|-----|
-| minigit-3 | 18 | 22 | 7 |
-| minigit-4 | 24 | 4 | 16 |
-| minigit-5 | 9 | 8 | 41 |
-| diffmerge-1 | 16 | 14 | 200 |
-| diffmerge-2 | 16 | 1 | 54 |
-| diffmerge-3 | 4 | 5 | 386 |
-| graphlib-1 | 490 | 462 | 818 |
-| graphlib-2 | 192 | 96 | 560 |
-| graphlib-3 | 12 | 8 | 416 |
 | kvstore-3 | 89 | 8 | 0 |
 | kvstore-4 | 108 | 12 | 0 |
 | kvstore-5 | 4 | 260 | 356 |
+| graphlib-1 | 490 | 462 | 818 |
+| graphlib-2 | 192 | 96 | 560 |
+| graphlib-3 | 12 | 8 | 416 |
+| diffmerge-1 | 16 | 14 | 200 |
+| diffmerge-2 | 16 | 1 | 54 |
+| diffmerge-3 | 4 | 5 | 386 |
+| minigit-3 | 18 | 22 | 7 |
+| minigit-4 | 24 | 4 | 16 |
+| minigit-5 | 9 | 8 | 41 |
 | **Total** | **982** | **900** | **2,854** |
