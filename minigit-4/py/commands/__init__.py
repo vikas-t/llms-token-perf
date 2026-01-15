@@ -1,0 +1,1 @@
+"""Mini Git commands package."""

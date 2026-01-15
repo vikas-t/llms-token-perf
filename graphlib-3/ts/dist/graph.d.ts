@@ -1,0 +1,17 @@
+import { Graph, GraphOptions, CreateGraphResult, AddNodeResult, AddEdgeResult, RemoveNodeResult, RemoveEdgeResult, GetNodesResult, GetEdgesResult, GetNeighborsResult, HasNodeResult, HasEdgeResult, GetDegreeResult, ClearGraphResult, CloneGraphResult, SubgraphResult, GraphInfoResult } from './types';
+export declare function getGraph(graphId: string): Graph | undefined;
+export declare function createGraph(options?: GraphOptions): CreateGraphResult;
+export declare function addNode(graphId: string, nodeId: string): AddNodeResult;
+export declare function addEdge(graphId: string, fromNode: string, toNode: string, weight?: number): AddEdgeResult;
+export declare function removeNode(graphId: string, nodeId: string): RemoveNodeResult;
+export declare function removeEdge(graphId: string, fromNode: string, toNode: string): RemoveEdgeResult;
+export declare function getNodes(graphId: string): GetNodesResult;
+export declare function getEdges(graphId: string): GetEdgesResult;
+export declare function getNeighbors(graphId: string, nodeId: string): GetNeighborsResult;
+export declare function hasNode(graphId: string, nodeId: string): HasNodeResult;
+export declare function hasEdge(graphId: string, fromNode: string, toNode: string): HasEdgeResult;
+export declare function getDegree(graphId: string, nodeId: string): GetDegreeResult;
+export declare function getGraphInfo(graphId: string): GraphInfoResult;
+export declare function clearGraph(graphId: string): ClearGraphResult;
+export declare function cloneGraph(graphId: string): CloneGraphResult;
+export declare function subgraph(graphId: string, nodeList: string[]): SubgraphResult;
